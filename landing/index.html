@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmniMem — one project brief, every AI tool</title>
+<meta name="description" content="OmniMem keeps one brief per project on your own machine and hands it to whichever AI tool you open next. Claude Code, Codex, Cursor, Antigravity, ChatGPT, Gemini.">
+<!-- No webfonts, no analytics, no CDN. A page that claims nothing leaves your
+     machine should not make third-party requests to prove it. -->
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="favicon.png">
+</head>
+<body>
+
+<a class="skip" href="#install">Skip to install</a>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark">◎</span>
+      <span class="brand-word">omnimem</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#problem">Why</a>
+      <a href="#how">How it works</a>
+      <a href="#tools">Your tools</a>
+      <a href="#privacy">Privacy</a>
+      <a class="nav-cta" href="#install">Install</a>
+    </nav>
+    <span class="chip" id="engine-chip">prototype · v0.2</span>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ─────────────────────────────────────────────────────────── hero -->
+<section class="band hero">
+  <div class="wrap">
+    <p class="eyebrow reveal r1">local-first · zero cost · no GPU</p>
+    <h1 class="reveal r2">
+      Every new tool starts by asking<br>
+      <em>what you're building.</em>
+    </h1>
+
+    <div class="hero-row">
+      <div class="hero-copy reveal r3">
+        <p class="lede">
+          OmniMem answers for you. It keeps one brief per project on your own
+          machine and hands it to whichever tool you open next — so you explain
+          the work once, not once per window.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#install">Install it</a>
+          <a class="btn" href="#tools">Connect your tools</a>
+        </div>
+      </div>
+      <p class="hero-note reveal r4">
+        Works today with Claude Code, Codex, Cursor, Antigravity, Windsurf,
+        Gemini CLI, Zed and VS Code — plus ChatGPT, Claude.ai and Gemini in the
+        browser.
+      </p>
+    </div>
+
+    <!-- The signature element. Switching tabs changes the frame and nothing
+         else, because that is precisely the product: same brief, any tool. -->
+    <figure class="switcher reveal r5">
+      <input type="radio" name="tool" id="tab-cc" checked>
+      <input type="radio" name="tool" id="tab-cx">
+      <input type="radio" name="tool" id="tab-ag">
+      <input type="radio" name="tool" id="tab-gpt">
+
+      <!-- Labels, not tabindex: the radios stay focusable and offscreen, so the
+           group gets native arrow-key behaviour instead of a hand-rolled
+           imitation of it. -->
+      <div class="switch-tabs">
+        <label for="tab-cc">Claude Code</label>
+        <label for="tab-cx">Codex</label>
+        <label for="tab-ag">Antigravity</label>
+        <label for="tab-gpt">ChatGPT</label>
+      </div>
+
+      <div class="pane">
+        <div class="pane-bar">
+          <span class="pane-dot"></span>
+          <span class="pane-title"></span>
+          <span class="pane-flag">brief loaded · 0 questions asked</span>
+        </div>
+        <pre class="brief"><span class="c">&lt;!-- OmniMem brief — generated, do not edit. Edit PINNED.md instead. --&gt;</span>
+<span class="h1"># omnimem</span>
+
+<span class="h2">## Now</span>
+- Wire up the browser extension, then the landing page.
+
+<span class="h2">## Stack</span>
+- Python 3.11 · SQLite (WAL, FTS5) · FastAPI · FastMCP · MV3 extension
+
+<span class="h2">## Map</span>
+- omnimem/core/facts.py — normalise, fingerprint, dedup, score
+- omnimem/core/render.py — turn facts into PROJECT.md
+
+<span class="h2">## Decisions in force</span>
+- SQLite + FTS5 rather than a vector database. No embeddings.
+- The facts store is the truth; markdown files are renders of it.
+
+<span class="h2">## Constraints</span>
+- Zero ongoing cost. No GPU. Stdlib only inside omnimem/core.
+
+<span class="g">## Gotchas</span>
+<span class="g">- INSERT OR REPLACE does not fire the FTS delete trigger unless</span>
+<span class="g">  recursive_triggers is on — and it is off by default.</span>
+
+<span class="h2">## Open questions</span>
+- Chrome Web Store listing, or stay unpacked?</pre>
+      </div>
+      <figcaption>The tool changes. The brief doesn't.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── problem -->
+<section class="band alt" id="problem">
+  <div class="wrap">
+    <p class="eyebrow">the tax</p>
+    <h2>Four tools, one project, the same paragraph every time.</h2>
+    <div class="split">
+      <div class="drudge" aria-hidden="true">
+        <p><span>claude code</span> So I'm building a memory layer, it's Python, SQLite, no…</p>
+        <p><span>codex</span> So I'm building a memory layer, it's Python, SQLite, no…</p>
+        <p><span>antigravity</span> So I'm building a memory layer, it's Python, SQLite…</p>
+        <p><span>chatgpt</span> So I'm building a memory layer, it's Pyth…</p>
+      </div>
+      <div class="prose">
+        <p>
+          Each tool is capable. None of them knows what the last one decided.
+          So you re-describe the goal, re-list the constraints, and re-explain
+          the bug you already fixed — and the tool still re-litigates a
+          decision you settled on Tuesday.
+        </p>
+        <p>
+          OmniMem writes it down once, in a folder you own, and gives every
+          tool the same starting point.
+        </p>
+        <p class="kinds">
+          Facts are typed, so the brief stays short and the important things
+          survive:
+          <b>goal</b> <b>decision</b> <b>constraint</b> <b>convention</b>
+          <b>stack</b> <b>entity</b> <b class="amber">gotcha</b> <b>task</b>
+          <b>open&nbsp;question</b>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── how -->
+<section class="band" id="how">
+  <div class="wrap">
+    <p class="eyebrow">the loop</p>
+    <h2>Capture, store, resume.</h2>
+    <div class="cards">
+      <article class="card">
+        <p class="card-kind">capture</p>
+        <h3>It notices while you work</h3>
+        <p>
+          In Claude Code, session hooks record what you asked for and what came
+          back — no tool call, no cooperation needed. Other editors get a rules
+          file that tells the agent to save what it establishes. In the browser,
+          the extension reads the conversation you're already having.
+        </p>
+        <p class="card-foot">Nothing is summarised by a paid API. The model you're already talking to does it.</p>
+      </article>
+      <article class="card">
+        <p class="card-kind">store</p>
+        <h3>One folder per project</h3>
+        <p>
+          Claims are deduplicated, typed and scored, then rendered into plain
+          markdown you can read and edit:
+          <code>PROJECT.md</code>, <code>DECISIONS.md</code>,
+          <code>TASKS.md</code>, <code>HANDOFF.md</code>.
+          Anything you put in <code>PINNED.md</code> is passed through
+          untouched and outranks everything the machine guessed.
+        </p>
+        <p class="card-foot">SQLite is an index over those files, not a place your work gets locked into.</p>
+      </article>
+      <article class="card">
+        <p class="card-kind">resume</p>
+        <h3>The next tool starts informed</h3>
+        <p>
+          Open any connected tool and say “continue.” It reads the brief first:
+          the goal, the decisions in force, the constraints, the gotchas, and
+          the one sentence describing where the last session stopped.
+        </p>
+        <p class="card-foot">In the browser, one click puts the brief in the message box.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── tools -->
+<section class="band alt" id="tools">
+  <div class="wrap">
+    <p class="eyebrow">connect</p>
+    <h2>Your tools</h2>
+    <p class="lede narrow">
+      One command wires up everything it finds. The table says how context
+      reaches each tool, because that differs more than the config does.
+    </p>
+
+    <div class="cmd-row">
+      <pre id="cmd-all" class="cmd">python -m omnimem.cli install --all</pre>
+      <button class="copy" data-for="cmd-all">Copy</button>
+    </div>
+
+    <div class="table-scroll">
+      <table class="tools">
+        <thead>
+          <tr><th>Tool</th><th>How the brief arrives</th><th>Effort</th><th>Install</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Claude Code</b></td>
+            <td>Session hooks inject it automatically</td>
+            <td><span class="pill pill-best">nothing to remember</span></td>
+            <td><code>install claude-code</code></td>
+          </tr>
+          <tr>
+            <td><b>Antigravity</b></td>
+            <td>Always-on rules file asks the agent to resume</td>
+            <td><span class="pill">automatic in practice</span></td>
+            <td><code>install antigravity</code></td>
+          </tr>
+          <tr>
+            <td><b>Codex CLI</b></td>
+            <td><code>AGENTS.md</code> asks the agent to resume</td>
+            <td><span class="pill">automatic in practice</span></td>
+            <td><code>install codex</code></td>
+          </tr>
+          <tr>
+            <td><b>Cursor</b></td>
+            <td>Always-apply rule asks the agent to resume</td>
+            <td><span class="pill">automatic in practice</span></td>
+            <td><code>install cursor</code></td>
+          </tr>
+          <tr>
+            <td><b>Windsurf</b></td>
+            <td>Rules file asks the agent to resume</td>
+            <td><span class="pill">automatic in practice</span></td>
+            <td><code>install windsurf</code></td>
+          </tr>
+          <tr>
+            <td><b>Gemini CLI</b></td>
+            <td>Always-on rules file asks the agent to resume</td>
+            <td><span class="pill">automatic in practice</span></td>
+            <td><code>install gemini-cli</code></td>
+          </tr>
+          <tr>
+            <td><b>Claude Desktop</b></td>
+            <td>Run the <code>resume</code> prompt, or ask it to</td>
+            <td><span class="pill pill-manual">one click per chat</span></td>
+            <td><code>install claude-desktop</code></td>
+          </tr>
+          <tr>
+            <td><b>VS Code</b> (Copilot)</td>
+            <td>Ask Copilot to call <code>omnimem_resume</code></td>
+            <td><span class="pill pill-manual">one ask per chat</span></td>
+            <td><code>install vscode</code></td>
+          </tr>
+          <tr>
+            <td><b>Zed</b></td>
+            <td>Ask the agent to call <code>omnimem_resume</code></td>
+            <td><span class="pill pill-manual">one ask per chat</span></td>
+            <td><code>install zed</code></td>
+          </tr>
+          <tr>
+            <td><b>ChatGPT · Claude.ai · Gemini</b><br>
+                <span class="sub">Perplexity, DeepSeek, Grok, Copilot, Le&nbsp;Chat</span></td>
+            <td>Browser extension: captures both sides, injects on click</td>
+            <td><span class="pill pill-best">automatic capture</span></td>
+            <td><code>Load unpacked</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="eyebrow spaced">by hand</p>
+    <h3 class="h3-loud">If you'd rather paste the config yourself</h3>
+    <p class="lede narrow">
+      Replace <code>/path/to/python</code> with your virtualenv's interpreter and
+      <code>/path/to/OmniMem</code> with the checkout. The installer fills both in
+      for you — this is only here for the cases it can't reach, like a remote
+      machine.
+    </p>
+
+    <details class="doc">
+      <summary>Claude Code — <code>~/.claude.json</code> and <code>~/.claude/settings.json</code></summary>
+      <p>The MCP server:</p>
+      <div class="cmd-row">
+        <pre id="cfg-cc" class="cmd">{
+  "mcpServers": {
+    "omnimem": {
+      "command": "/path/to/python",
+      "args": ["-m", "omnimem.cli", "mcp"],
+      "env": { "PYTHONPATH": "/path/to/OmniMem" }
+    }
+  }
+}</pre>
+        <button class="copy" data-for="cfg-cc">Copy</button>
+      </div>
+      <p>
+        Claude Code is the one host that needs no cooperation from the model,
+        because hooks can print context directly into the session. Add these to
+        <code>~/.claude/settings.json</code>:
+      </p>
+      <div class="cmd-row">
+        <pre id="cfg-cc-hooks" class="cmd">{
+  "hooks": {
+    "SessionStart": [
+      { "matcher": "startup|resume|clear",
+        "hooks": [{ "type": "command", "timeout": 15,
+          "command": "PYTHONPATH=/path/to/OmniMem /path/to/python -m omnimem.cli hook session_start" }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "timeout": 30,
+          "command": "PYTHONPATH=/path/to/OmniMem /path/to/python -m omnimem.cli hook user_prompt" }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "timeout": 15,
+          "command": "PYTHONPATH=/path/to/OmniMem /path/to/python -m omnimem.cli hook stop" }] }
+    ]
+  }
+}</pre>
+        <button class="copy" data-for="cfg-cc-hooks">Copy</button>
+      </div>
+      <p class="fine">
+        The capture hooks always exit 0, on purpose. A non-zero exit from
+        <code>Stop</code> tells Claude Code <em>not</em> to stop — a memory bug
+        must never be able to wedge a coding session.
+      </p>
+    </details>
+
+    <details class="doc">
+      <summary>Antigravity &amp; Gemini CLI — <code>~/.gemini/settings.json</code></summary>
+      <p>Same <code>mcpServers</code> block as Claude Code. Then, so the agent
+      actually reaches for it, append the rules block to
+      <code>~/.gemini/GEMINI.md</code>:</p>
+      <div class="cmd-row">
+        <pre id="cfg-ag" class="cmd">## OmniMem — cross-tool project memory
+
+1. At the start of every session, call `omnimem_resume` before anything else.
+2. When a decision is made, call `omnimem_add_decision` immediately.
+3. Before the session ends, call `omnimem_save_session` with `facts`
+   ([{kind, text}], one atomic claim each) and `next_step`.
+4. Use `omnimem_search` instead of asking the user about earlier work.</pre>
+        <button class="copy" data-for="cfg-ag">Copy</button>
+      </div>
+      <p class="fine">
+        Antigravity keeps its own knowledge store per workspace. OmniMem doesn't
+        replace it — it's the layer that survives leaving Antigravity.
+      </p>
+    </details>
+
+    <details class="doc">
+      <summary>Codex CLI — <code>~/.codex/config.toml</code></summary>
+      <div class="cmd-row">
+        <pre id="cfg-cx" class="cmd">[mcp_servers.omnimem]
+command = "/path/to/python"
+args = ["-m", "omnimem.cli", "mcp"]
+startup_timeout_sec = 20
+
+[mcp_servers.omnimem.env]
+PYTHONPATH = "/path/to/OmniMem"</pre>
+        <button class="copy" data-for="cfg-cx">Copy</button>
+      </div>
+      <p>Put the same rules block in <code>~/.codex/AGENTS.md</code>. Note the
+      snake_case keys and the <code>mcp_servers</code> spelling — TOML, not JSON.</p>
+    </details>
+
+    <details class="doc">
+      <summary>Cursor — <code>~/.cursor/mcp.json</code> and a rule file</summary>
+      <p>Standard <code>mcpServers</code> block. The rule goes in
+      <code>~/.cursor/rules/omnimem.mdc</code> and <em>must</em> start with this
+      front matter, or Cursor never applies it:</p>
+      <div class="cmd-row">
+        <pre id="cfg-cur" class="cmd">---
+description: Cross-tool project memory via OmniMem
+alwaysApply: true
+---</pre>
+        <button class="copy" data-for="cfg-cur">Copy</button>
+      </div>
+    </details>
+
+    <details class="doc">
+      <summary>VS Code and Zed — the key name changes</summary>
+      <p>
+        This is the usual reason a server silently fails to appear. VS Code
+        (<code>.vscode/mcp.json</code>) uses <code>servers</code>. Zed
+        (<code>~/.config/zed/settings.json</code>) uses
+        <code>context_servers</code>. Everyone else uses
+        <code>mcpServers</code>.
+      </p>
+      <div class="cmd-row">
+        <pre id="cfg-vsc" class="cmd">// .vscode/mcp.json
+{ "servers": { "omnimem": { "command": "/path/to/python",
+  "args": ["-m", "omnimem.cli", "mcp"],
+  "env": { "PYTHONPATH": "/path/to/OmniMem" } } } }</pre>
+        <button class="copy" data-for="cfg-vsc">Copy</button>
+      </div>
+    </details>
+
+    <details class="doc">
+      <summary>Browser — ChatGPT, Claude.ai, Gemini and six more</summary>
+      <ol class="steps tight">
+        <li>Start the engine: <code>python -m omnimem.cli serve</code></li>
+        <li>Open <code>chrome://extensions</code> and turn on Developer mode.</li>
+        <li><b>Load unpacked</b> → pick the <code>extension/</code> folder.</li>
+        <li>Open a chat. A small bar appears bottom-right: an indigo dot means
+            it's watching, <b>Inject brief</b> pastes the project state into the
+            message box.</li>
+      </ol>
+      <p class="fine">
+        The extension talks only to <code>127.0.0.1</code> and fetches its access
+        token from the engine on first run. Capture is on by default; pause it
+        globally or per site from the toolbar popup.
+      </p>
+    </details>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── privacy -->
+<section class="band" id="privacy">
+  <div class="wrap">
+    <p class="eyebrow">privacy</p>
+    <h2>No account, no server, no API key.</h2>
+    <div class="facts">
+      <div>
+        <h3>It all lives in one folder</h3>
+        <p>
+          <code>~/.omnimem/</code> — a SQLite file and plain markdown. Delete a
+          project folder and that memory is gone. Nothing syncs anywhere.
+        </p>
+      </div>
+      <div>
+        <h3>The port is closed to the web</h3>
+        <p>
+          The engine binds <code>127.0.0.1</code> only, allows a fixed list of
+          chat origins, and requires a token from
+          <code>~/.omnimem/token</code> on every write. A page you visit can't
+          read your memory.
+        </p>
+      </div>
+      <div>
+        <h3>Secrets are stripped in the page</h3>
+        <p>
+          API keys, GitHub and Slack tokens, JWTs, database URLs with passwords,
+          and email addresses are replaced <em>before</em> the text leaves the
+          tab — not after it arrives.
+        </p>
+      </div>
+      <div>
+        <h3>This page proves the point</h3>
+        <p>
+          It loads no fonts, scripts, or trackers from anywhere. Served straight
+          off the engine on your own machine. View source.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── install -->
+<section class="band alt" id="install">
+  <div class="wrap">
+    <p class="eyebrow">install</p>
+    <h2>Four commands.</h2>
+    <ol class="steps">
+      <li>
+        <p>Set up the environment.</p>
+        <div class="cmd-row">
+          <pre id="s1" class="cmd">python3 -m venv .venv &amp;&amp; .venv/bin/pip install -r requirements.txt</pre>
+          <button class="copy" data-for="s1">Copy</button>
+        </div>
+      </li>
+      <li>
+        <p>Make the command short. Add this to your shell profile.</p>
+        <div class="cmd-row">
+          <pre id="s2" class="cmd">alias omnimem="$(pwd)/.venv/bin/python -m omnimem.cli"</pre>
+          <button class="copy" data-for="s2">Copy</button>
+        </div>
+      </li>
+      <li>
+        <p>Wire up every tool it can find.</p>
+        <div class="cmd-row">
+          <pre id="s3" class="cmd">omnimem install --all</pre>
+          <button class="copy" data-for="s3">Copy</button>
+        </div>
+      </li>
+      <li>
+        <p>Start the engine. Leave it running; it idles at about 0% CPU.</p>
+        <div class="cmd-row">
+          <pre id="s4" class="cmd">omnimem serve</pre>
+          <button class="copy" data-for="s4">Copy</button>
+        </div>
+      </li>
+    </ol>
+    <p class="lede narrow">
+      Then check it: <code>omnimem doctor</code> lists every tool it's connected
+      to and what's missing. <code>omnimem resume</code> prints the brief for the
+      folder you're standing in.
+    </p>
+    <p class="callout">
+      <b>The test that matters:</b> describe a task in Claude Code, then open
+      ChatGPT and say “continue.” If it knows the project, it works.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── faq -->
+<section class="band" id="faq">
+  <div class="wrap">
+    <p class="eyebrow">questions</p>
+    <h2>Reasonable doubts</h2>
+    <div class="qa">
+      <details>
+        <summary>Does it cost anything to run?</summary>
+        <p>
+          No. There is no hosted service and no API key. Summaries come from the
+          model you're already talking to, so the marginal cost of remembering
+          is zero.
+        </p>
+      </details>
+      <details>
+        <summary>Does it need a GPU, or download a model?</summary>
+        <p>
+          Neither. Deduplication is token-set overlap and content hashing;
+          search is SQLite FTS5. It runs in roughly 60–90 MB of RAM on a laptop
+          and does nothing while idle. A local embedding model is an optional
+          extra, not the default path.
+        </p>
+      </details>
+      <details>
+        <summary>What happens when the engine isn't running?</summary>
+        <p>
+          Editors write to SQLite directly, so saving still works with the server
+          off. The browser extension queues what it captured and syncs when the
+          engine comes back. Nothing raises an error at the model — a tool that
+          errors once gets ignored for the rest of a session, which is the worst
+          possible failure for a memory tool.
+        </p>
+      </details>
+      <details>
+        <summary>Does it read my whole codebase?</summary>
+        <p>
+          No. It reads manifests — <code>requirements.txt</code>,
+          <code>package.json</code>, <code>pyproject.toml</code>,
+          <code>go.mod</code>, <code>Dockerfile</code> — to work out your stack,
+          and it checks that a file path mentioned in conversation actually
+          exists before recording it. Source files are never opened or stored.
+        </p>
+      </details>
+      <details>
+        <summary>How do I see or fix what it thinks?</summary>
+        <p>
+          Open <code>~/.omnimem/projects/&lt;project&gt;/PROJECT.md</code>. It's
+          generated, so edits there get overwritten — put corrections in
+          <code>PINNED.md</code> in the same folder and they'll be passed
+          through verbatim and outrank everything else. Tick a checkbox in
+          <code>TASKS.md</code> and it's marked done.
+        </p>
+      </details>
+      <details>
+        <summary>Can I run it on a server instead of my laptop?</summary>
+        <p>
+          Yes, and you don't need to. If you want to anyway, any always-free
+          small VM works — Oracle Cloud's free ARM tier, or a GitHub Codespace
+          for a few hours. Put it behind an SSH tunnel rather than exposing the
+          port; the security model assumes a machine only you can reach. Don't
+          put <code>~/.omnimem</code> on Dropbox, iCloud or Google Drive — a
+          synced SQLite write-ahead log corrupts, and the engine refuses to start
+          if it detects one.
+        </p>
+      </details>
+      <details>
+        <summary>Is this finished?</summary>
+        <p>
+          No — it's a working prototype, used daily by its author. Contradictory
+          decisions can both appear in a brief until supersession rules land, and
+          the browser selectors will break whenever a chat site reships its
+          markup. Every site's selectors live in one file,
+          <code>extension/platforms.js</code>, for exactly that reason.
+        </p>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <span><span class="brand-mark">◎</span> omnimem — prototype, MIT licensed</span>
+    <span class="foot-note">Runs on your machine. Sends nothing anywhere.</span>
+  </div>
+</footer>
+
+<script>
+// Two small conveniences, no framework. Both degrade to nothing if unsupported.
+document.querySelectorAll('.copy').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var src = document.getElementById(btn.dataset.for);
+    if (!src) return;
+    var restore = function (label) {
+      btn.textContent = label;
+      setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+    };
+    if (!navigator.clipboard) { restore('Select it'); return; }
+    navigator.clipboard.writeText(src.innerText).then(
+      function () { restore('Copied'); },
+      function () { restore('Select it'); }
+    );
+  });
+});
+
+// Same-origin on purpose: when this page is served by the engine the check just
+// works, and when it's opened from disk it fails silently rather than asking the
+// browser to make a cross-origin request to localhost.
+fetch('/health').then(function (r) { return r.json(); }).then(function (d) {
+  if (!d || d.status !== 'ok') return;
+  var chip = document.getElementById('engine-chip');
+  chip.textContent = 'engine running · v' + d.version;
+  chip.classList.add('chip-live');
+}).catch(function () { /* not served by the engine; leave the version chip */ });
+</script>
+</body>
+</html>

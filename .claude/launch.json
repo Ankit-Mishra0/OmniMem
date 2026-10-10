@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "omnimem",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["-m", "omnimem.cli", "serve"],
+      "port": 8000
+    }
+  ]
+}

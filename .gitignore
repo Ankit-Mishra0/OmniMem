@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Tests / tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# SQLite. The real store lives in ~/.omnimem/, never in the checkout, but the
+# pre-rewrite code defaulted to the repo root and left these behind. The -wal and
+# -shm files are listed explicitly because they are the ones that get committed
+# by accident: they are recreated on every open and a stale pair in git will make
+# someone's clone fail to open a database that is otherwise fine.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Editors / OS
+.DS_Store
+.idea/
+*.swp
+
+# Local agent config that is machine-specific
+.claude/settings.local.json
+
+# Extension build output, if a packaging step is ever added
+extension/*.zip

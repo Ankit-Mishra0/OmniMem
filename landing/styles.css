@@ -1,0 +1,769 @@
+/*
+ * OmniMem landing page.
+ *
+ * System fonts only, no CDN, no webfont request. That is a design decision, not
+ * a shortcut: the page is served off the engine on the user's own machine and
+ * claims that nothing leaves it, so it had better not phone Google for a font.
+ *
+ * The type hierarchy is deliberately inverted -- monospace carries the display
+ * sizes and the grotesque carries the body. The product's output is a plain text
+ * file, so the file's own face should be the loudest thing on the page.
+ */
+
+:root {
+  /* Deep ink-blue rather than neutral black: the whole palette sits on one cool
+     hue so the single warm value below actually means something. */
+  --ink:    #0A0E1A;
+  --ink-2:  #101729;
+  --ink-3:  #0D1424;
+  --line:   #1D2740;
+  --line-2: #2A3654;
+  --paper:  #E8ECF6;
+  --muted:  #7E8CAD;
+  --indigo: #6366F1;
+  --violet: #A78BFA;
+  /* The only warm value on the page. Reserved for gotchas -- the highest-value
+     section of a brief -- so colour encodes content type instead of decorating. */
+  --amber:  #F0B357;
+
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --wrap: 1140px;
+  --gut: clamp(20px, 5vw, 40px);
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font: 400 16px/1.65 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* A single wash behind the fold, fixed so it doesn't travel with scroll. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -20% -10% auto -10%;
+  height: 70vh;
+  background:
+    radial-gradient(50% 55% at 22% 0%, rgba(99, 102, 241, 0.20), transparent 70%),
+    radial-gradient(40% 45% at 78% 8%, rgba(167, 139, 250, 0.14), transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+main, .nav, .foot { position: relative; z-index: 1; }
+
+a { color: var(--violet); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  padding: 10px 16px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  z-index: 50;
+}
+.skip:focus { left: 12px; }
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 var(--gut);
+}
+
+/* ─────────────────────────────────────────────────────────────────── nav */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(14px);
+  background: rgba(10, 14, 26, 0.72);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 62px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  color: var(--paper);
+  font: 600 17px/1 var(--mono);
+  letter-spacing: -0.02em;
+}
+.brand:hover { text-decoration: none; }
+
+.brand-mark {
+  font-size: 17px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-left: auto;
+  font-size: 14.5px;
+}
+.nav-links a { color: var(--muted); }
+.nav-links a:hover { color: var(--paper); text-decoration: none; }
+
+.nav-cta {
+  padding: 7px 15px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--paper) !important;
+}
+.nav-cta:hover { border-color: var(--violet); background: rgba(167, 139, 250, 0.10); }
+
+.chip {
+  flex: 0 0 auto;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font: 500 11.5px/1 var(--mono);
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.chip-live {
+  color: #7CE0B3;
+  border-color: rgba(124, 224, 179, 0.35);
+  background: rgba(124, 224, 179, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────── band + type */
+
+.band { padding: clamp(72px, 11vw, 128px) 0; }
+.band.alt { background: var(--ink-3); border-block: 1px solid var(--line); }
+.band.hero { padding-top: clamp(48px, 7vw, 76px); padding-bottom: clamp(60px, 9vw, 104px); }
+
+.eyebrow {
+  margin: 0 0 18px;
+  font: 500 12.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--violet);
+  vertical-align: 1px;
+}
+.eyebrow.spaced { margin-top: clamp(56px, 8vw, 92px); }
+
+h1 {
+  margin: 0 0 clamp(28px, 4vw, 44px);
+  /* Capped so the longer of the two lines (31 chars) still fits the 1060px
+     measure -- mono is roughly 0.6em per character, which sets the ceiling. */
+  font: 700 clamp(1.95rem, 4.4vw, 3.35rem)/1.06 var(--mono);
+  letter-spacing: -0.045em;
+}
+h1 em {
+  font-style: normal;
+  background: linear-gradient(105deg, var(--indigo) 10%, var(--violet) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+h2 {
+  margin: 0 0 22px;
+  max-width: 22ch;
+  font: 600 clamp(1.62rem, 3.1vw, 2.35rem)/1.14 var(--mono);
+  letter-spacing: -0.035em;
+}
+
+h3 {
+  margin: 0 0 10px;
+  font: 600 1.06rem/1.35 var(--sans);
+  letter-spacing: -0.01em;
+}
+
+.h3-loud {
+  margin: 0 0 18px;
+  font: 600 clamp(1.15rem, 2vw, 1.45rem)/1.3 var(--mono);
+  letter-spacing: -0.03em;
+}
+
+.lede {
+  margin: 0 0 28px;
+  max-width: 56ch;
+  font-size: 1.06rem;
+  color: var(--muted);
+}
+.lede.narrow { max-width: 62ch; margin-bottom: 26px; }
+
+code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(99, 102, 241, 0.13);
+  font: 0.86em/1.4 var(--mono);
+  color: #C7CDFB;
+  white-space: nowrap;
+}
+
+.fine { margin: 14px 0 0; font-size: 13.5px; color: var(--muted); }
+
+/* ────────────────────────────────────────────────────────────────── hero */
+
+/* Headline full-bleed inside the wrap, then a two-column row, then the artifact.
+   Monospace at display size needs real horizontal room -- boxed into a half-width
+   column it breaks every three words and the type stops reading as a statement. */
+.hero-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px clamp(32px, 5vw, 64px);
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: clamp(40px, 5vw, 60px);
+}
+
+.hero-copy { flex: 1 1 420px; max-width: 60ch; }
+.hero-copy .lede { margin-bottom: 24px; }
+
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  color: var(--paper);
+  font: 600 14.5px/1 var(--sans);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+.btn:hover {
+  text-decoration: none;
+  border-color: var(--violet);
+  background: rgba(167, 139, 250, 0.10);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff;
+}
+.btn-primary:hover {
+  border-color: transparent;
+  background: linear-gradient(135deg, #4F46E5, #8B5CF6);
+}
+
+.hero-note {
+  flex: 0 1 30ch;
+  margin: 0;
+  padding-left: 18px;
+  border-left: 1px solid var(--line-2);
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* ── the signature element ─────────────────────────────────────────────
+   Four tabs over one brief. Switching changes the window chrome and the
+   mechanism label, and leaves the body byte-identical, because that is the
+   entire product claim rendered as an interaction. CSS only, no script. */
+
+.switcher { margin: 0; min-width: 0; }
+
+.switcher input {
+  /* Offscreen but focusable, so the group keeps native arrow-key behaviour. */
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-tabs {
+  display: flex;
+  /* Never wrap. The tabs are visually joined to the pane by a transparent bottom
+     border, and a second row of tabs breaks that join into a floating notch. */
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-bottom: -1px;
+}
+
+.switch-tabs label {
+  flex: 0 0 auto;
+  padding: 8px 14px 9px;
+  border: 1px solid var(--line);
+  border-bottom-color: transparent;
+  border-radius: 9px 9px 0 0;
+  background: rgba(16, 23, 41, 0.55);
+  font: 500 12.5px/1 var(--mono);
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color 140ms ease, background 140ms ease;
+}
+.switch-tabs label:hover { color: var(--paper); }
+
+#tab-cc:checked  ~ .switch-tabs label[for="tab-cc"],
+#tab-cx:checked  ~ .switch-tabs label[for="tab-cx"],
+#tab-ag:checked  ~ .switch-tabs label[for="tab-ag"],
+#tab-gpt:checked ~ .switch-tabs label[for="tab-gpt"] {
+  background: var(--ink-2);
+  border-color: var(--line-2);
+  border-bottom-color: var(--ink-2);
+  color: var(--paper);
+}
+
+#tab-cc:focus-visible  ~ .switch-tabs label[for="tab-cc"],
+#tab-cx:focus-visible  ~ .switch-tabs label[for="tab-cx"],
+#tab-ag:focus-visible  ~ .switch-tabs label[for="tab-ag"],
+#tab-gpt:focus-visible ~ .switch-tabs label[for="tab-gpt"] {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}
+
+.pane {
+  border: 1px solid var(--line-2);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
+  background: var(--ink-2);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+}
+
+.pane-bar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pane-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.16);
+}
+
+.pane-title { font: 500 12px/1 var(--mono); color: var(--paper); }
+#tab-cc:checked  ~ .pane .pane-title::after { content: "claude code · SessionStart hook"; }
+#tab-cx:checked  ~ .pane .pane-title::after { content: "codex · omnimem_resume"; }
+#tab-ag:checked  ~ .pane .pane-title::after { content: "antigravity · omnimem_resume"; }
+#tab-gpt:checked ~ .pane .pane-title::after { content: "chatgpt · Inject brief"; }
+
+.pane-flag {
+  margin-left: auto;
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.01em;
+  color: var(--muted);
+}
+
+.brief {
+  margin: 0;
+  padding: 20px 22px 24px;
+  overflow-x: auto;
+  font: 400 13.2px/1.66 var(--mono);
+  color: #B7C2DC;
+  tab-size: 2;
+}
+.brief .c  { color: #4E5B7C; }
+.brief .h1 { color: var(--paper); font-weight: 700; }
+.brief .h2 { color: var(--violet); }
+.brief .g  { color: var(--amber); }
+
+.switcher figcaption {
+  margin-top: 16px;
+  font: 500 13px/1.5 var(--mono);
+  letter-spacing: -0.01em;
+  color: var(--muted);
+}
+
+/* ─────────────────────────────────────────────────────────────── problem */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 4.5vw, 56px);
+  align-items: start;
+}
+
+/* The drudgery, shown rather than described: the same sentence four times,
+   fading and truncating as the patience does. */
+.drudge {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+}
+.drudge p {
+  margin: 0 0 14px;
+  font: 400 13px/1.5 var(--mono);
+  color: #8E9BB8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drudge p:last-child { margin-bottom: 0; }
+.drudge p:nth-child(2) { opacity: 0.78; }
+.drudge p:nth-child(3) { opacity: 0.56; }
+.drudge p:nth-child(4) { opacity: 0.36; }
+.drudge p span {
+  display: inline-block;
+  min-width: 96px;
+  margin-right: 12px;
+  color: var(--violet);
+}
+
+.prose p { margin: 0 0 18px; color: var(--muted); }
+.prose p:last-child { margin-bottom: 0; }
+
+.kinds { font-size: 14.5px; }
+.kinds b {
+  display: inline-block;
+  margin: 6px 5px 0 0;
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font: 500 12px/1 var(--mono);
+  color: #BCC6E4;
+}
+.kinds b.amber { color: var(--amber); border-color: rgba(240, 179, 87, 0.42); }
+
+/* ─────────────────────────────────────────────────────────────────── how */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 18px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+.card:hover { border-color: var(--line-2); transform: translateY(-2px); }
+
+.card-kind {
+  margin: 0 0 14px;
+  font: 500 11.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  color: var(--violet);
+}
+
+.card p { margin: 0 0 14px; font-size: 14.5px; color: var(--muted); }
+
+.card-foot {
+  margin: auto 0 0 !important;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 13px !important;
+  color: #6C7A9C !important;
+}
+
+/* ─────────────────────────────────────────────────────────── commands */
+
+.cmd-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 0 0 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: #070B14;
+  overflow: hidden;
+}
+
+.cmd {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 13px 16px;
+  overflow-x: auto;
+  font: 400 13px/1.6 var(--mono);
+  color: #C7CDFB;
+  white-space: pre;
+}
+
+.copy {
+  flex: 0 0 auto;
+  align-self: stretch;
+  padding: 0 16px;
+  border: 0;
+  border-left: 1px solid var(--line);
+  background: rgba(99, 102, 241, 0.10);
+  color: #BCC6E4;
+  font: 600 12px/1 var(--mono);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.copy:hover { background: rgba(99, 102, 241, 0.22); color: #fff; }
+
+/* ───────────────────────────────────────────────────────────────── tools */
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+}
+
+.tools {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tools th {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line-2);
+  text-align: left;
+  font: 500 11.5px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.tools td {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  vertical-align: top;
+}
+.tools tr:last-child td { border-bottom: 0; }
+.tools td b { color: var(--paper); font-weight: 600; }
+.tools td:first-child { white-space: nowrap; }
+
+.tools .sub { display: block; margin-top: 3px; font-size: 12.5px; color: #62708F; }
+
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font: 500 11.5px/1.35 var(--mono);
+  color: #BCC6E4;
+  white-space: nowrap;
+}
+.pill-best {
+  color: #7CE0B3;
+  border-color: rgba(124, 224, 179, 0.35);
+  background: rgba(124, 224, 179, 0.07);
+}
+.pill-manual { color: var(--amber); border-color: rgba(240, 179, 87, 0.32); }
+
+details.doc {
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--ink-2);
+  overflow: hidden;
+}
+details.doc > summary {
+  padding: 15px 20px;
+  cursor: pointer;
+  font: 500 14px/1.45 var(--mono);
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  list-style: none;
+}
+details.doc > summary::-webkit-details-marker { display: none; }
+details.doc > summary::before {
+  content: "+";
+  display: inline-block;
+  width: 18px;
+  color: var(--violet);
+  font-weight: 700;
+}
+details.doc[open] > summary { border-bottom: 1px solid var(--line); }
+details.doc[open] > summary::before { content: "−"; }
+details.doc > summary:hover { background: rgba(99, 102, 241, 0.06); }
+
+details.doc > *:not(summary) { margin-inline: 20px; }
+details.doc > p { margin-block: 16px; font-size: 14.5px; color: var(--muted); }
+details.doc > .cmd-row { margin-inline: 20px; }
+details.doc > *:last-child { margin-bottom: 20px; }
+
+/* ─────────────────────────────────────────────────────────────── privacy */
+
+/* Explicitly 2×2 rather than auto-fit: four items across a 1060px measure leaves
+   a single orphan on the second row, and the hairline rules make that misalignment
+   the most visible thing in the section. */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px clamp(32px, 5vw, 64px);
+}
+.facts > div { padding-top: 18px; border-top: 1px solid var(--line-2); }
+.facts p { margin: 0; font-size: 14.5px; color: var(--muted); }
+
+/* ─────────────────────────────────────────────────────────────── install */
+
+.steps { margin: 0 0 30px; padding: 0; list-style: none; counter-reset: step; }
+
+.steps > li {
+  position: relative;
+  padding-left: 46px;
+  padding-bottom: 24px;
+  counter-increment: step;
+}
+/* Numbering earns its place here: these commands must run in this order. */
+.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 28px; height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  font: 600 12.5px/1 var(--mono);
+  color: var(--violet);
+}
+.steps > li > p { margin: 3px 0 12px; font-size: 15px; color: var(--paper); }
+.steps > li:last-child { padding-bottom: 0; }
+
+.steps.tight > li { padding-left: 26px; padding-bottom: 12px; font-size: 14.5px; color: var(--muted); }
+.steps.tight > li::before {
+  width: 18px; height: 18px;
+  border: 0;
+  place-items: start;
+  content: counter(step) ".";
+}
+
+.callout {
+  margin: 0;
+  padding: 18px 22px;
+  border: 1px solid rgba(240, 179, 87, 0.28);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius);
+  background: rgba(240, 179, 87, 0.05);
+  font-size: 15px;
+  color: #D9DFF0;
+}
+.callout b { color: var(--amber); }
+
+/* ─────────────────────────────────────────────────────────────────── faq */
+
+.qa { max-width: 780px; }
+
+.qa details {
+  border-bottom: 1px solid var(--line);
+}
+.qa summary {
+  padding: 20px 34px 20px 0;
+  position: relative;
+  cursor: pointer;
+  font: 500 1.02rem/1.4 var(--sans);
+  color: var(--paper);
+  list-style: none;
+}
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary::after {
+  content: "+";
+  position: absolute;
+  right: 4px; top: 19px;
+  font: 400 20px/1 var(--mono);
+  color: var(--violet);
+}
+.qa details[open] summary::after { content: "−"; }
+.qa summary:hover { color: var(--violet); }
+.qa details p {
+  margin: 0 0 22px;
+  max-width: 68ch;
+  font-size: 14.8px;
+  color: var(--muted);
+}
+
+/* ────────────────────────────────────────────────────────────────── foot */
+
+.foot { border-top: 1px solid var(--line); padding: 30px 0 44px; }
+.foot-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  justify-content: space-between;
+  font: 500 13px/1.5 var(--mono);
+  color: var(--muted);
+}
+.foot-note { color: #5D6A89; }
+
+/* ──────────────────────────────────────────────────────────────── motion */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.reveal { animation: rise 700ms cubic-bezier(0.2, 0.75, 0.2, 1) both; }
+.r1 { animation-delay: 40ms; }
+.r2 { animation-delay: 120ms; }
+.r3 { animation-delay: 240ms; }
+.r4 { animation-delay: 340ms; }
+.r5 { animation-delay: 440ms; }
+
+/* ──────────────────────────────────────────────────────────── responsive */
+
+@media (max-width: 1000px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .hero-note { flex-basis: 100%; padding-left: 0; border-left: 0; }
+}
+
+@media (max-width: 720px) {
+  .nav-links a:not(.nav-cta) { display: none; }
+  .chip { display: none; }
+  h1 br { display: none; }
+  h2 { max-width: none; }
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  /* Shrink the tabs to fit four across 375px rather than let them scroll: a
+     hidden fourth tab would hide the point the switcher exists to make. */
+  .switch-tabs { gap: 4px; }
+  .switch-tabs label { padding: 7px 9px 8px; font-size: 11px; }
+  .pane-flag { display: none; }
+  .brief { font-size: 11.4px; padding: 16px 16px 20px; }
+  .copy { padding: 0 12px; }
+  .drudge p { font-size: 12px; }
+  .drudge p span { min-width: 0; display: block; margin-bottom: 2px; }
+  .tools th, .tools td { padding: 12px 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { animation: none; }
+  * { transition-duration: 1ms !important; }
+}

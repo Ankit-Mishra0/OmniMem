@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OmniMem</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="head">
+    <div class="brand">
+      <span class="logo">◎</span>
+      <span class="wordmark">OmniMem</span>
+    </div>
+    <div class="status" id="status">
+      <span class="dot" id="status-dot"></span>
+      <span id="status-text">checking…</span>
+    </div>
+  </header>
+
+  <section class="card" id="engine-off" hidden>
+    <p class="warn">The local engine isn't running. Start it with:</p>
+    <code class="cmd" id="serve-cmd">omnimem serve</code>
+    <p class="hint">Nothing is captured while it's off — turns queue up and sync when it returns.</p>
+  </section>
+
+  <section class="card">
+    <label for="project">Project</label>
+    <input id="project" list="project-list" placeholder="inferred from the conversation"
+           autocomplete="off" spellcheck="false">
+    <datalist id="project-list"></datalist>
+    <div class="row">
+      <button class="btn btn-ghost" id="this-tab">Use for this tab only</button>
+      <button class="btn btn-primary" id="inject">Inject brief</button>
+    </div>
+    <p class="hint" id="project-hint">Facts from every tool land in the same project folder.</p>
+  </section>
+
+  <section class="card">
+    <div class="toggle">
+      <div>
+        <span class="toggle-name">Capture conversations</span>
+        <span class="toggle-sub">Both your prompts and the replies</span>
+      </div>
+      <input type="checkbox" id="capture" class="switch">
+    </div>
+    <div class="toggle">
+      <div>
+        <span class="toggle-name">Redact secrets</span>
+        <span class="toggle-sub">Keys, tokens and emails, before sending</span>
+      </div>
+      <input type="checkbox" id="redact" class="switch">
+    </div>
+    <div class="toggle">
+      <div>
+        <span class="toggle-name">Pause on <span id="site-name">this site</span></span>
+        <span class="toggle-sub" id="paused-count">No sites paused</span>
+      </div>
+      <input type="checkbox" id="pause-site" class="switch">
+    </div>
+  </section>
+
+  <section class="card compact">
+    <div class="stats">
+      <div><b id="stat-captured">0</b><span>captured</span></div>
+      <div><b id="stat-redacted">0</b><span>redacted</span></div>
+      <div><b id="stat-queued">0</b><span>queued</span></div>
+    </div>
+    <button class="btn btn-ghost wide" id="flush" hidden>Sync queued turns now</button>
+  </section>
+
+  <details class="card compact">
+    <summary>Advanced</summary>
+    <label for="port">Engine port</label>
+    <input id="port" type="number" min="1" max="65535" inputmode="numeric">
+    <p class="hint" id="err-line"></p>
+  </details>
+
+  <footer class="foot">
+    <span>100% local · nothing leaves your machine</span>
+    <a href="#" id="docs">Setup guide</a>
+  </footer>
+
+  <script src="platforms.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
